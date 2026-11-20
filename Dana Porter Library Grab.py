@@ -24,17 +24,17 @@ pygame.init()
 screen = pygame.display.set_mode((1200,800))
 clock = pygame.time.Clock()
 tile_size = 90
-player_pos = 1 # Tracks the position of the player, and thus, changes what the picture of the player's sprite is
+player_pos = 1 #Tracks the position of the player, and thus, changes what the picture of the player's sprite is
 moveSpeed = 20
 score = 0
 start_time = 0
 timesPlayed = 0
 collected_books = []
 tile_list = []
-#*****
-book_index = 0
+book_index = 0 #SH - Tracks what book the user is trying to find; is used in many of the functions
+#SH - The list below tracks whether each book should appear
+#There is one extra variable in this list, and all associated ones so the functions we created below can work
 book_appearances = [True, False, False, False, False, False, False, False]
-
 
 #MW game state variables
 introStart = True
@@ -47,7 +47,7 @@ startOver = False
 pygame.display.set_caption("Dana Porter Book Grab")
 
 #MW imports all of the images and image rectangles for the game
-#MW floor desiggn for the game
+#MW floor design for the game
 ground = pygame.image.load("Floor Design.png").convert_alpha()
 ground=pygame.transform.scale(ground, (52*tile_size,53*tile_size))
 ground_rect = ground.get_rect(topleft = (-7*tile_size,-18*tile_size))
@@ -113,7 +113,7 @@ purple_book = pygame.transform.scale(purple_book, (tile_size, tile_size))
 #SH - Originally, the game had different functions to set the position for each of the books. 
 #We decided to consolidate some of them into one function that takes in different parameters 
 
-#SH - A list of the random positions for each of the books *****
+#SH - Lists of the random positions for each book
 blue_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
 orange_book_random_positions = [(220, 1260),(-300, -1260),(1000, 900),(2800, -100),(500, 200),(1800, 1900)]
 green_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
@@ -123,7 +123,7 @@ red_book_random_positions = [(220,1260),(1800,1900),(500,200),(2800,-100),(1000,
 purple_book_random_positions = [(800,-1260),(3300,-1530),(2450,540),(3300,3050),(2000,3035),(-270,3060)]
 
 #SH - A function that initializes the position of a book; its parameters are the book, and the associated list of potential positions.
-#The function then choose a random position from this list, and returns the rectangle of the book at that position.
+#The function chooses a random position from the associated list, and returns the rectangle of the book at that position.
 def initialize_book_position(book, potential_book_positions):
     final_position = random.choice(potential_book_positions)
     return book.get_rect(center = final_position)
@@ -138,9 +138,10 @@ random_teal_book = initialize_book_position(teal_book, teal_book_random_position
 random_red_book = initialize_book_position(red_book, red_book_random_positions)
 random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
 
-#*****
-book_image_list = [blue_book, orange_book, green_book, magenta_book, teal_book, red_book, purple_book, purple_book] #*****
-random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book] #*****
+#SH - Two lists that contain the image of the book, and the rectangle of the book at the assigned position
+#Once again, each list has an extra element
+book_image_list = [blue_book, orange_book, green_book, magenta_book, teal_book, red_book, purple_book, purple_book]
+random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
 
 #MW imports fonts and defines word objects and rectangles for each word object
 fontObj2=pygame.font.Font('my_font.ttf', 60)
@@ -198,9 +199,9 @@ textRectObj6.center = (900, 600)
 
 #initializes all the game sound effects and the game music
 pickUpSound = pygame.mixer.Sound('item-equip-6904.mp3') 
-#pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
+pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
 #plays the game music in a infinite loop
-#pygame.mixer.music.play(-1, 0.0)
+pygame.mixer.music.play(-1, 0.0)
 
 
 
@@ -248,7 +249,6 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
     ground_rect.x += ground_x  
     
     #MW moves the book item rectangles
-    #*****
     for i in range(7):
         random_book_list[i].x += ground_x
         random_book_list[i].y += ground_y
@@ -348,12 +348,13 @@ def movePlayer(player_pos, ground_x, ground_y):
     #MW returns the player positon so that it can be reset with the new value
     return player_pos
 
-#MS - Each of these functions responds to whether the initial random book appearance variables are true or false.
-#If true, these functions will blit the books onto the screen.
-#*****
+#SH - This function responds to whether the random book appearance variable is true or false. If true, the book is blitted onto the screen.
+#This was originally made of functions for each book, but now it is in one
 def bookAppearance():
     if book_appearances[book_index]:
         screen.blit(book_image_list[book_index], random_book_list[book_index])
+        
+        #MS - The function tells the player to click e to pick the book up. This only occurs if the player has played once. 
         if player_rect.colliderect(random_book_list[book_index]) and timesPlayed == 0:
             click_e()
 
@@ -427,7 +428,8 @@ world_data = [
 
 ]
 
-background_elements = [table_img, br, bl, bu, bd, bv, bh, chair, chair_up, chair_left, chair_right, owall, iwall, table] #*****
+#SH - A list of the different background elements
+background_elements = [table_img, br, bl, bu, bd, bv, bh, chair, chair_up, chair_left, chair_right, owall, iwall, table]
 
 #MW initializes the map
 def init_map():
@@ -438,7 +440,7 @@ def init_map():
         #MW negative number so that the map is offset up
         col_count = -7 
         #MW checks each element in a row of the map matrix
-        for tile in row: #*****
+        for tile in row:
             if tile > 0:
                 #MW sets the image that is associated with the number one in the map matrix
                 img = pygame.transform.scale(background_elements[tile-1], (tile_size, tile_size))
@@ -488,22 +490,19 @@ while True:
             #MW if the s button is pressed then the y portion of movement is set to the negative movespeed      
             elif event.key == pygame.K_s: 
                 ground_y=-moveSpeed
+                
         #MW if a button that was pressed is no longer pressed        
         if event.type == pygame.KEYUP:
             #MW sets the x and y components of movement to zero so the player stop moving if the key that was unpressed was w, a, s, or d
             if event.key == pygame.K_a:
-                ground_x=0
-                
+                ground_x=0       
             elif event.key == pygame.K_d:
-                ground_x=0
-                
+                ground_x=0     
             elif event.key == pygame.K_w: 
-                ground_y=0
-                
+                ground_y=0     
             elif event.key == pygame.K_s: 
                 ground_y=0
         
-        #*****
         #MS - This checks if the player collides with the book 
         if player_rect.colliderect(random_book_list[book_index]) and book_appearances[book_index]:
             #MS - This first part checks if a key is being pressed
@@ -537,15 +536,13 @@ while True:
                 how_to_play_start = False
                 start_time = pygame.time.get_ticks()
     
-    #MW checks a boolean variable for wether or not the intro should be blit onto the screen            
+    #MW checks a boolean variable for whether or not the intro should be blit onto the screen            
     if introStart:
-        #calls the intro function and 
-        intro()
-    #MW checks if a boolean variable for wether or not the how to play portion of the game shhould be blit onto the screen    
+        intro() #Then, the related function is called
+    #MW - The same applies to the how to play portion of the game    
     elif how_to_play_start:
-        #calls the how to play function
         how_to_play()
-    #MW checks a boolean varaible for wether or not the the main portion of the game should be initiated
+    #MW - And for the main portion of the game to be initiated
     elif controlStart:
         #MW fills the screen a base layer grey
         screen.fill("Grey")
@@ -568,6 +565,7 @@ while True:
         score_message = fontObj1.render(f'your score: {score}',False,"Green")
         score_message_rect = score_message.get_rect(center = (600,450)) 
         screen.blit(score_message,score_message_rect)
+        
         #MW reinitializes all the varaibles so that the game can start again at the exact same state
         if startOver:
             #MW makes it so the user isnt prompted with press e too pick a book in their second playthrough
@@ -580,9 +578,9 @@ while True:
             tile_list.clear()
             #MW recreates the map
             init_map()
-               
-            #*****
-            book_appearances = [True, False, False, False, False, False, False, False] #resets book apperance so that the first book is once again the only book on the map
+            
+            #SH - esets book apperance so that the first book is once again the only book on the map
+            book_appearances = [True, False, False, False, False, False, False, False]
             book_index = 0
             controlStart = True
             score = 0
@@ -596,7 +594,7 @@ while True:
             random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
             random_red_book = initialize_book_position(red_book, red_book_random_positions)
             random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
-            random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book] #*****
+            random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
             startOver = False
             
     #MW updates the screen        
