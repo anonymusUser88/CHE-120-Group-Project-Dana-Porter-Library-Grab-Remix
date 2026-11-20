@@ -198,9 +198,9 @@ textRectObj6.center = (900, 600)
 
 #initializes all the game sound effects and the game music
 pickUpSound = pygame.mixer.Sound('item-equip-6904.mp3') 
-pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
+#pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
 #plays the game music in a infinite loop
-pygame.mixer.music.play(-1, 0.0)
+#pygame.mixer.music.play(-1, 0.0)
 
 
 
@@ -246,22 +246,12 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
     #MW Moves the ground rectangles
     ground_rect.y += ground_y
     ground_rect.x += ground_x  
-    #MW moves the book item rectangles
-    random_blue_book.x += ground_x  
-    random_orange_book.x += ground_x
-    random_green_book.x += ground_x
-    random_magenta_book.x += ground_x
-    random_teal_book.x += ground_x
-    random_red_book.x += ground_x
-    random_purple_book.x += ground_x
     
-    random_blue_book.y += ground_y
-    random_orange_book.y += ground_y
-    random_green_book.y += ground_y
-    random_magenta_book.y += ground_y
-    random_teal_book.y += ground_y
-    random_red_book.y += ground_y
-    random_purple_book.y += ground_y
+    #MW moves the book item rectangles
+    #*****
+    for i in range(7):
+        random_book_list[i].x += ground_x
+        random_book_list[i].y += ground_y
     
     #Moves every tile in the map matrix
     for tile in tile_list:
@@ -278,46 +268,26 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
             #MW if the x component of movement is less than zero all the objects are moved to the right to keep the objects in their original positions as they should not move if the player collides with a tile
             if ground_x < 0:
                 ground_rect.x += moveSpeed
-                random_blue_book.x += moveSpeed
-                random_orange_book.x += moveSpeed
-                random_green_book.x += moveSpeed
-                random_magenta_book.x += moveSpeed
-                random_teal_book.x += moveSpeed
-                random_red_book.x += moveSpeed
-                random_purple_book.x += moveSpeed
+                for i in range(7):
+                    random_book_list[i].x += moveSpeed
                 
             #MW if the x component of movement is more than zero all the objects are moved to the left to keep the objects in their original positions as they should not move if the player collides with a tile
             elif ground_x > 0:
                 ground_rect.x -= moveSpeed
-                random_blue_book.x -= moveSpeed
-                random_orange_book.x -= moveSpeed
-                random_green_book.x -= moveSpeed
-                random_magenta_book.x -= moveSpeed
-                random_teal_book.x -= moveSpeed
-                random_red_book.x -= moveSpeed
-                random_purple_book.x -= moveSpeed
+                for i in range(7):
+                    random_book_list[i].x -= moveSpeed
             
             #MW if the y component of movement is less than zero all the objects are moved to down to keep the objects in their original positions as they should not move if the player collides with a tile
             if ground_y < 0:
                 ground_rect.y += moveSpeed
-                random_blue_book.y += moveSpeed
-                random_orange_book.y += moveSpeed
-                random_green_book.y += moveSpeed
-                random_magenta_book.y += moveSpeed
-                random_teal_book.y += moveSpeed
-                random_red_book.y += moveSpeed
-                random_purple_book.y += moveSpeed
+                for i in range(7):
+                    random_book_list[i].y += moveSpeed
             
             #MW if the y component of movement is more than zero all the objects are moved to the left to to keep the objects in their original positions as they should not move if the player collides with a tile
             elif ground_y > 0:
                 ground_rect.y -= moveSpeed
-                random_blue_book.y -= moveSpeed
-                random_orange_book.y -= moveSpeed
-                random_green_book.y -= moveSpeed
-                random_magenta_book.y -= moveSpeed
-                random_teal_book.y -= moveSpeed
-                random_red_book.y -= moveSpeed
-                random_purple_book.y -= moveSpeed
+                for i in range(7):
+                    random_book_list[i].y -= moveSpeed
             
             
             for tile in tile_list:
@@ -457,6 +427,8 @@ world_data = [
 
 ]
 
+background_elements = [table_img, br, bl, bu, bd, bv, bh, chair, chair_up, chair_left, chair_right, owall, iwall, table] #*****
+
 #MW initializes the map
 def init_map():
     #MW negative number so that the map is offset to the left
@@ -466,95 +438,17 @@ def init_map():
         #MW negative number so that the map is offset up
         col_count = -7 
         #MW checks each element in a row of the map matrix
-        for tile in row:
-            #MW checks what type of tile should be assigned to the map position in accordance to the the number associated with the position in the row
-            if tile == 1:
+        for tile in row: #*****
+            if tile > 0:
                 #MW sets the image that is associated with the number one in the map matrix
-                img = pygame.transform.scale(table_img, (tile_size, tile_size))
+                img = pygame.transform.scale(background_elements[tile-1], (tile_size, tile_size))
                 #MW sets the rectangle for the image with coordinates that correspond to the col_count and row_count and tile size
                 img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
                 #MW creates a tile image with the image and reactangle
                 tile = (img, img_rect)
                 #MW appends the tile to the list of all tiles for the map matrix
                 tile_list.append(tile)
-                
-            elif tile == 2:
-                img = pygame.transform.scale(br, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-                
-            elif tile == 3:
-                img = pygame.transform.scale(bl, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
             
-            elif tile == 4:
-                img = pygame.transform.scale(bu, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-                    
-            elif tile == 5:
-                img = pygame.transform.scale(bd, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-                
-            elif tile == 6:
-                img = pygame.transform.scale(bv, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-            
-            elif tile == 7:
-                img = pygame.transform.scale(bh, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-                
-            elif tile == 8:
-                img = pygame.transform.scale(chair, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-            
-            elif tile == 9:
-                img = pygame.transform.scale(chair_up, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-            
-            elif tile == 10:
-                img = pygame.transform.scale(chair_left, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-            
-            elif tile == 11:
-                img = pygame.transform.scale(chair_right, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-            
-            elif tile == 12:
-                img = pygame.transform.scale(owall, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-                
-            elif tile == 13:
-                img = pygame.transform.scale(iwall, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
-            
-            elif tile == 14:
-                img = pygame.transform.scale(table, (tile_size, tile_size))
-                img_rect = img.get_rect(topright = (col_count*tile_size,row_count*tile_size))
-                tile = (img, img_rect)
-                tile_list.append(tile)
             #MW adds one to column count each time it runs through a element in a row as it is now in the column to the right
             col_count += 1
         #MW adds one to the row count each time it runs through an entire row as it is now one row down
@@ -610,7 +504,7 @@ while True:
                 ground_y=0
         
         #*****
-        #MS - This checks if the player collides with the first book 
+        #MS - This checks if the player collides with the book 
         if player_rect.colliderect(random_book_list[book_index]) and book_appearances[book_index]:
             #MS - This first part checks if a key is being pressed
             if event.type == pygame.KEYDOWN:
@@ -621,7 +515,6 @@ while True:
                     book_appearances[book_index + 1] = True
                     collected_books.append([book_image_list[book_index],random_book_list[book_index]])
                     book_index+=1
-                            
         
         #MW checks if the user pressed the screen            
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -643,6 +536,7 @@ while True:
                 controlStart = True
                 how_to_play_start = False
                 start_time = pygame.time.get_ticks()
+    
     #MW checks a boolean variable for wether or not the intro should be blit onto the screen            
     if introStart:
         #calls the intro function and 
@@ -688,15 +582,13 @@ while True:
             init_map()
                
             #*****
-            book_appearances = [True, False, False, False, False, False, False, False]
+            book_appearances = [True, False, False, False, False, False, False, False] #resets book apperance so that the first book is once again the only book on the map
             book_index = 0
-            #resets book apperance so that the first book is once again the only book on the map
             controlStart = True
-
             score = 0
-            #MW resets all the books you collected
+            
+            #MW resets all the books you collected and resets all of the random books
             collected_books.clear()
-            #MW resets all of the random books
             random_blue_book = initialize_book_position(blue_book, blue_book_random_positions)
             random_orange_book = initialize_book_position(orange_book, orange_book_random_positions)
             random_green_book = initialize_book_position(green_book, green_book_random_positions)
