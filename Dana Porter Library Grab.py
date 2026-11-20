@@ -1,7 +1,7 @@
 #Department of Chemical Engineering, Faculty of Engineering
 #University of Waterloo
-#12/11/2026
-#MW = Marcus Wright, MS = Michael Small- Original Comments
+#20/11/2026
+#MW = Marcus Wright, MS = Michael Small - Original Comments
 
 #SH = Sethumi Hapuarachchi
 #MF = Manal Fatima
@@ -32,16 +32,9 @@ timesPlayed = 0
 collected_books = []
 tile_list = []
 
-#MS - These are the random book appearance variables.
-#When, during the game loop, the code determines that the player has picked up a book 
-#the first one swiches to false and the next one switches to true. This continues until the game ends.
-book_apperence1 = True
-book_apperence2 = False
-book_apperence3 = False
-book_apperence4 = False
-book_apperence5 = False
-book_apperence6 = False
-book_apperence7 = False
+#*****
+book_appearances = [True, False, False, False, False, False, False, False]
+book_index = 0
 
 #MW game state variables
 introStart = True
@@ -129,7 +122,8 @@ teal_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(33
 red_book_random_positions = [(220,1260),(1800,1900),(500,200),(2800,-100),(1000,900),(-300,-1260)]
 purple_book_random_positions = [(800,-1260),(3300,-1530),(2450,540),(3300,3050),(2000,3035),(-270,3060)]
 
-#A function that initializes the position of a book
+#A function that initializes the position of a book; its parameters are the book, and the associated list of potential positions.
+#The function then choose a random position from this list, and returns the rectangle of the book at that position.
 def initialize_book_position(book, potential_book_positions):
     final_position = random.choice(potential_book_positions)
     return book.get_rect(center = final_position)
@@ -143,6 +137,9 @@ random_magenta_book = initialize_book_position(magenta_book, magenta_book_random
 random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
 random_red_book = initialize_book_position(red_book, red_book_random_positions)
 random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
+
+book_image_list = [blue_book, orange_book, green_book, magenta_book, teal_book, red_book, purple_book, purple_book] #*****
+random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book] #*****
 
 #MW imports fonts and defines word objects and rectangles for each word object
 fontObj2=pygame.font.Font('my_font.ttf', 60)
@@ -383,44 +380,44 @@ def movePlayer(player_pos, ground_x, ground_y):
 #MS - Each of these functions responds to whether the initial random book appearance variables are true or false.
 #If true, these functions will blit the books onto the screen.
 def blueBook():
-    if book_apperence1:
+    if book_appearances[0]:
         screen.blit(blue_book, random_blue_book)
         if player_rect.colliderect(random_blue_book) and timesPlayed == 0:
             click_e()
 #This above function also tells the player to click e to pick the book usp. This only occurs if the player has played once. 
 
 def orangeBook():
-    if book_apperence2:
+    if book_appearances[1]:
         screen.blit(orange_book, random_orange_book)
         if player_rect.colliderect(random_orange_book) and timesPlayed == 0:
             click_e()
 
 def greenBook():
-    if book_apperence3:
+    if book_appearances[2]:
         screen.blit(green_book, random_green_book)
         if player_rect.colliderect(random_green_book) and timesPlayed == 0:
             click_e()
 
 def magentaBook():
-    if book_apperence4:
+    if book_appearances[3]:
         screen.blit(magenta_book, random_magenta_book)
         if player_rect.colliderect(random_magenta_book) and timesPlayed == 0:
             click_e()
 
 def tealBook():
-    if book_apperence5:
+    if book_appearances[4]:
         screen.blit(teal_book, random_teal_book)
         if player_rect.colliderect(random_teal_book) and timesPlayed == 0:
             click_e()
         
 def redBook():
-    if book_apperence6:
+    if book_appearances[5]:
         screen.blit(red_book, random_red_book)
         if player_rect.colliderect(random_red_book) and timesPlayed == 0:
             click_e()
 
 def purpleBook():
-    if book_apperence7: 
+    if book_appearances[6]: 
         screen.blit(purple_book, random_purple_book)
         if player_rect.colliderect(random_purple_book) and timesPlayed == 0:
             click_e()
@@ -648,64 +645,20 @@ while True:
             elif event.key == pygame.K_s: 
                 ground_y=0
         
-        #MS - This checks if the player collides with the first book        
-        if player_rect.colliderect(random_blue_book):
+        #*****
+        #MS - This checks if the player collides with the first book 
+        if player_rect.colliderect(random_book_list[book_index]) and book_appearances[book_index]:
             #MS - This first part checks if a key is being pressed
             if event.type == pygame.KEYDOWN:
                 #MS - This check determines if the e key is being pressed.
                 if event.key == pygame.K_e:
-                    #MW plays sound to signify pickup
                     pickUpSound.play() 
-                    #MS - This sets the book1 appearence to false which removes the book from the screen.
-                    book_apperence1 = False
-                    #MS - This part activates the next random book to appeare randomely
-                    book_apperence2 = True
-                    #MS - adds book ones image and rectangle to a list that contains the collected books
-                    collected_books.append([blue_book,random_blue_book])
-        #MS - Checks if the player has collided with the second book and that book one was collected            
-        elif player_rect.colliderect(random_orange_book) and book_apperence2:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    pickUpSound.play() 
-                    book_apperence2 = False
-                    book_apperence3 = True
-                    collected_books.append([orange_book,random_orange_book])
-        #MS - Checks if the player has collided with the third book and that book two was collected, etc.
-        elif player_rect.colliderect(random_green_book) and book_apperence3:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    pickUpSound.play() 
-                    book_apperence3 = False
-                    book_apperence4 = True
-                    collected_books.append([green_book,random_green_book])    
-        elif player_rect.colliderect(random_magenta_book)and book_apperence4:
-            pickUpSound.play() 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    book_apperence4 = False
-                    book_apperence5 = True
-                    collected_books.append([magenta_book,random_magenta_book])     
-        elif player_rect.colliderect(random_teal_book)and book_apperence5:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    pickUpSound.play() 
-                    book_apperence5 = False
-                    book_apperence6 = True
-                    collected_books.append([teal_book,random_teal_book])
-        elif player_rect.colliderect(random_red_book)and book_apperence6:
-            pickUpSound.play() 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    book_apperence6 = False
-                    book_apperence7 = True
-                    collected_books.append([red_book,random_red_book])            
-        elif player_rect.colliderect(random_purple_book)and book_apperence7:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    pickUpSound.play() 
-                    book_apperence7 = False
-                    
-                    collected_books.append([purple_book,random_purple_book])
+                    book_appearances[book_index] = False
+                    book_appearances[book_index + 1] = True
+                    collected_books.append([book_image_list[book_index],random_book_list[book_index]])
+                    book_index+=1
+                            
+        
         #MW checks if the user pressed the screen            
         if event.type == pygame.MOUSEBUTTONDOWN:
             #MW checks if the user pressed the start button in the intro
@@ -754,7 +707,7 @@ while True:
         score = display_score()
     
     #MW checks if all the books were collected
-    if len(collected_books)==7:
+    if len(collected_books)==7 and book_index >= 7:
         #MW stop the game functions from running
         controlStart=False
         #MW gets the outro screen and asks the user if they want to play again
@@ -775,15 +728,13 @@ while True:
             tile_list.clear()
             #MW recreates the map
             init_map()
+               
+            #*****
+            book_appearances = [True, False, False, False, False, False, False, False]
+            book_index = 0
             #resets book apperance so that the first book is once again the only book on the map
             controlStart = True
-            book_apperence1 = True
-            book_apperence2 = False
-            book_apperence3 = False
-            book_apperence4 = False
-            book_apperence5 = False
-            book_apperence6 = False
-            book_apperence7 = False
+
             score = 0
             #MW resets all the books you collected
             collected_books.clear()
@@ -795,6 +746,7 @@ while True:
             random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
             random_red_book = initialize_book_position(red_book, red_book_random_positions)
             random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
+            random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book] #*****
             startOver = False
             
     #MW updates the screen        
