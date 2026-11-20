@@ -31,10 +31,10 @@ start_time = 0
 timesPlayed = 0
 collected_books = []
 tile_list = []
-
 #*****
-book_appearances = [True, False, False, False, False, False, False, False]
 book_index = 0
+book_appearances = [True, False, False, False, False, False, False, False]
+
 
 #MW game state variables
 introStart = True
@@ -113,7 +113,7 @@ purple_book = pygame.transform.scale(purple_book, (tile_size, tile_size))
 #SH - Originally, the game had different functions to set the position for each of the books. 
 #We decided to consolidate some of them into one function that takes in different parameters 
 
-#SH - A list of the random positions for each of the books
+#SH - A list of the random positions for each of the books *****
 blue_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
 orange_book_random_positions = [(220, 1260),(-300, -1260),(1000, 900),(2800, -100),(500, 200),(1800, 1900)]
 green_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
@@ -122,7 +122,7 @@ teal_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(33
 red_book_random_positions = [(220,1260),(1800,1900),(500,200),(2800,-100),(1000,900),(-300,-1260)]
 purple_book_random_positions = [(800,-1260),(3300,-1530),(2450,540),(3300,3050),(2000,3035),(-270,3060)]
 
-#A function that initializes the position of a book; its parameters are the book, and the associated list of potential positions.
+#SH - A function that initializes the position of a book; its parameters are the book, and the associated list of potential positions.
 #The function then choose a random position from this list, and returns the rectangle of the book at that position.
 def initialize_book_position(book, potential_book_positions):
     final_position = random.choice(potential_book_positions)
@@ -138,6 +138,7 @@ random_teal_book = initialize_book_position(teal_book, teal_book_random_position
 random_red_book = initialize_book_position(red_book, red_book_random_positions)
 random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
 
+#*****
 book_image_list = [blue_book, orange_book, green_book, magenta_book, teal_book, red_book, purple_book, purple_book] #*****
 random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book] #*****
 
@@ -379,49 +380,12 @@ def movePlayer(player_pos, ground_x, ground_y):
 
 #MS - Each of these functions responds to whether the initial random book appearance variables are true or false.
 #If true, these functions will blit the books onto the screen.
-def blueBook():
-    if book_appearances[0]:
-        screen.blit(blue_book, random_blue_book)
-        if player_rect.colliderect(random_blue_book) and timesPlayed == 0:
+#*****
+def bookAppearance():
+    if book_appearances[book_index]:
+        screen.blit(book_image_list[book_index], random_book_list[book_index])
+        if player_rect.colliderect(random_book_list[book_index]) and timesPlayed == 0:
             click_e()
-#This above function also tells the player to click e to pick the book usp. This only occurs if the player has played once. 
-
-def orangeBook():
-    if book_appearances[1]:
-        screen.blit(orange_book, random_orange_book)
-        if player_rect.colliderect(random_orange_book) and timesPlayed == 0:
-            click_e()
-
-def greenBook():
-    if book_appearances[2]:
-        screen.blit(green_book, random_green_book)
-        if player_rect.colliderect(random_green_book) and timesPlayed == 0:
-            click_e()
-
-def magentaBook():
-    if book_appearances[3]:
-        screen.blit(magenta_book, random_magenta_book)
-        if player_rect.colliderect(random_magenta_book) and timesPlayed == 0:
-            click_e()
-
-def tealBook():
-    if book_appearances[4]:
-        screen.blit(teal_book, random_teal_book)
-        if player_rect.colliderect(random_teal_book) and timesPlayed == 0:
-            click_e()
-        
-def redBook():
-    if book_appearances[5]:
-        screen.blit(red_book, random_red_book)
-        if player_rect.colliderect(random_red_book) and timesPlayed == 0:
-            click_e()
-
-def purpleBook():
-    if book_appearances[6]: 
-        screen.blit(purple_book, random_purple_book)
-        if player_rect.colliderect(random_purple_book) and timesPlayed == 0:
-            click_e()
-
 
 #MS - This function blits the collected books in the top of the screen.
 def showBooks(collected_books):
@@ -430,7 +394,7 @@ def showBooks(collected_books):
         collected_books[i][1].y = 0
         screen.blit(collected_books[i][0],collected_books[i][1])
 
-#MS - This matix-list makes up the entirety of the map. 
+#MS - This matrix-list makes up the entirety of the map. 
 #It is a really efficient way to blit hundreds of objects without taking up hundreds of lines of code.
 #This is really useful when programing colisions. When the player colides with a solid tile, the entire matrix-map is moved.
 #In a collision, this moves every element at the same time in the same direction as the player so it appears like the player isn't moving at all.
@@ -694,20 +658,14 @@ while True:
         #MW calls upon all the necessary function for the game to run
         drawFloor10(ground_x, ground_y, moveSpeed)
         player_pos = movePlayer(player_pos, ground_x, ground_y)
-        blueBook()
-        orangeBook()
-        greenBook()
-        magentaBook()
-        tealBook()
-        redBook()
-        purpleBook()
+        bookAppearance()
         #MW shows all the book you collected at the top left corner of your screen
         showBooks(collected_books)
         #MW gets the score value
         score = display_score()
     
     #MW checks if all the books were collected
-    if len(collected_books)==7 and book_index >= 7:
+    if len(collected_books)==7:
         #MW stop the game functions from running
         controlStart=False
         #MW gets the outro screen and asks the user if they want to play again
