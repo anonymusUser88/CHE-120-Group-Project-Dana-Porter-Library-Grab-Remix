@@ -1,6 +1,6 @@
 #Department of Chemical Engineering, Faculty of Engineering
 #University of Waterloo
-#20/11/2026
+#21/11/2026
 #MW = Marcus Wright, MS = Michael Small - Original Comments
 
 #SH = Sethumi Hapuarachchi
@@ -29,6 +29,7 @@ moveSpeed = 20
 score = 0
 start_time = 0
 timesPlayed = 0
+lives = 0
 collected_books = []
 tile_list = []
 book_index = 0 #SH - Tracks what book the user is trying to find; is used in many of the functions
@@ -53,7 +54,7 @@ ground=pygame.transform.scale(ground, (52*tile_size,53*tile_size))
 ground_rect = ground.get_rect(topleft = (-7*tile_size,-18*tile_size))
 
 #MW bookshelf tile images
-table_img = pygame.image.load('Table top.png')
+table_top = pygame.image.load('Table top.png')
 br = pygame.image.load('Bookend Right.png').convert_alpha()
 bl =pygame.image.load('Bookend Left.png').convert_alpha()
 bu = pygame.image.load('Bookend up.png').convert_alpha()
@@ -90,6 +91,16 @@ chair_right = pygame.image.load("chair right.png").convert_alpha()
 iwall = pygame.image.load("iwall.png").convert_alpha()
 owall = pygame.image.load("owall.png").convert_alpha()
 table = pygame.image.load("table.png").convert_alpha()
+
+#SH - Heart lives image and rectangle
+full_heart = pygame.image.load("full_heart.png").convert_alpha()
+full_heart = pygame.transform.scale(full_heart, (70, 70))
+full_heart_rect = full_heart.get_rect(topright = (0, 730))
+
+#Goose image and rectangle
+enemy = pygame.image.load("goose_right.png").convert_alpha()
+enemy = pygame.transform.scale(enemy, (tile_size, tile_size))
+enemy_rect = enemy.get_rect(topright = (800,-1260))
 
 #MS - Random Book Generator
 #After initiallizing the book images, I scaled them up to the same size as the tiles.
@@ -144,80 +155,90 @@ book_image_list = [blue_book, orange_book, green_book, magenta_book, teal_book, 
 random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
 
 #MW imports fonts and defines word objects and rectangles for each word object
-fontObj2=pygame.font.Font('my_font.ttf', 60)
-textSurfaceObj2 = fontObj2.render('Start Game', True, "Black", "White")
-textRectObj2 = textSurfaceObj2.get_rect() 
-textRectObj2.center = (600, 600)
+font_size_80 = pygame.font.Font('my_font.ttf', 80)
+TitleSurface = font_size_80.render('Dana Porter Book Grab', True, "Black", "White") 
+TitleSurfaceRect = TitleSurface.get_rect() 
+TitleSurfaceRect.center = (600, 300)
 
-fontObj1=pygame.font.Font('my_font.ttf', 80)
-textSurfaceObj1 = fontObj1.render('Dana Porter Book Grab', True, "Black", "White") 
-textRectObj1 = textSurfaceObj1.get_rect() 
-textRectObj1.center = (600, 300)
+font_size_60 = pygame.font.Font('my_font.ttf', 60)
+StartGame = font_size_60.render('Start Game', True, "Black", "White")
+StartGameRect = StartGame.get_rect() 
+StartGameRect.center = (600, 600)
+
+font_size_40 = pygame.font.Font('my_font.ttf', 40)
 
 #MS - These are the fonts and messages for the how to play screen.
 #These fonts are converted to rectangles so they can be placed acurately on the screen.
-Obj3_font = pygame.font.Font('my_font.ttf', 40)
-Obj3_text_surface = Obj3_font.render('How to Play', True, 'Black', 'Grey')
-Obj3_text_rect = Obj3_text_surface.get_rect(center = (600,100))
+HowToPlay = font_size_40.render('How to Play', True, 'Black', 'Grey')
+HowToPlayRect = HowToPlay.get_rect(center = (600,100))
 
-Obj4_font = pygame.font.Font('my_font.ttf', 40)
-Obj4_text_surface = Obj4_font.render('Next', True, 'Black', 'Yellow')
-Obj4_text_rect = Obj4_text_surface.get_rect(center = (1100,700))
+NextButton = font_size_40.render('Next', True, 'Black', 'Yellow')
+NextButtonRect = NextButton.get_rect(center = (1100,700))
 
-#MS - These are the instructions for the how to play screen and will be blitted like the above messages.
-instruction1 = 'Press the \"a\", \"s\", \"w\" and \"d\" keys to move.'
-instruction2 = 'Collect all 7 books as fast as possible.'
-instruction3 = 'To pick up a book, press the \"e\" key.'
+Instructions_1 = font_size_40.render('Press the \"a\", \"s\", \"w\" and \"d\" keys to move.', True, 'Black', 'Grey')
+Instructions_1_Rect = Instructions_1.get_rect(center = (600,300))
 
-Obj5_font = pygame.font.Font('my_font.ttf', 40)
-Obj5_text_surface = Obj5_font.render(instruction1, True, 'Black', 'Grey')
-Obj5_text_rect = Obj5_text_surface.get_rect(center = (600,300))
-
-Obj6_font = pygame.font.Font('my_font.ttf', 40)
-Obj6_text_surface = Obj6_font.render(instruction2, True, 'Black', 'Grey')
+Obj6_text_surface = font_size_40.render('Collect all 7 books as fast as possible.', True, 'Black', 'Grey')
 Obj6_text_rect = Obj6_text_surface.get_rect(center = (600,400))
 
-Obj7_font = pygame.font.Font('my_font.ttf', 40)
-Obj7_text_surface = Obj7_font.render(instruction3, True, 'Black', 'Grey')
+Obj7_text_surface = font_size_40.render('To pick up a book, press the \"e\" key.', True, 'Black', 'Grey')
 Obj7_text_rect = Obj7_text_surface.get_rect(center = (600,500))
 
-textSurfaceObj3 = fontObj1.render('You Won!', True, "Black", "White") 
+#SH - Text for the winning screen
+textSurfaceObj3 = font_size_80.render('You Won!', True, "Black", "White") 
 textRectObj3 = textSurfaceObj3.get_rect() 
 textRectObj3.center = (600, 150)
 
-textSurfaceObj4 = fontObj1.render('Would You Like to Play Again?', True, "Black", "White") 
+textSurfaceObj4 = font_size_80.render('Would You Like to Play Again?', True, "Black", "White") 
 textRectObj4 = textSurfaceObj4.get_rect() 
 textRectObj4.center = (600, 300)
 
-textSurfaceObj5 = fontObj1.render('Yes', True, "Black", "White") 
+textSurfaceObj5 = font_size_80.render('Yes', True, "Black", "White") 
 textRectObj5 = textSurfaceObj5.get_rect() 
 textRectObj5.center = (300, 600)
 
-textSurfaceObj6 = fontObj1.render('No', True, "Black", "White") 
+textSurfaceObj6 = font_size_80.render('No', True, "Black", "White") 
 textRectObj6 = textSurfaceObj6.get_rect() 
 textRectObj6.center = (900, 600)
 
+#Text for the losing screen
+textSurfaceObj7 = font_size_80.render('You Lost D:', True, "White", "Black") 
+textRectObj7 = textSurfaceObj7.get_rect() 
+textRectObj7.center = (600, 150)
+
+textSurfaceObj8 = font_size_80.render('Would You Like to Play Again?', True, "White", "Black") 
+textRectObj8 = textSurfaceObj8.get_rect() 
+textRectObj8.center = (600, 300)
+
+textSurfaceObj9 = font_size_80.render('Yes', True, "White", "Black") 
+textRectObj9 = textSurfaceObj9.get_rect() 
+textRectObj9.center = (300, 600)
+
+TitleSurface0 = font_size_80.render('No', True, "White", "Black") 
+TitleSurfaceRect0 = TitleSurface0.get_rect() 
+TitleSurfaceRect0.center = (900, 600)
+
 #initializes all the game sound effects and the game music
 pickUpSound = pygame.mixer.Sound('item-equip-6904.mp3') 
-pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
+#pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
 #plays the game music in a infinite loop
-pygame.mixer.music.play(-1, 0.0)
+#pygame.mixer.music.play(-1, 0.0)
 
 
 
 #MW function that blits (render sprites onto a background - SH) the intro screen
-def intro ():
+def intro():
     #MW fills screen and blits two text objects
     screen.fill('White')
-    screen.blit(textSurfaceObj1, textRectObj1) 
-    screen.blit(textSurfaceObj2, textRectObj2) 
+    screen.blit(TitleSurface, TitleSurfaceRect) 
+    screen.blit(StartGame, StartGameRect) 
 
 #MS - This is the function that blits all the how to play fonts and messages onto the screen.
 def how_to_play():
     screen.fill('Grey')
-    screen.blit(Obj3_text_surface, Obj3_text_rect)
-    screen.blit(Obj4_text_surface, Obj4_text_rect)
-    screen.blit(Obj5_text_surface, Obj5_text_rect) 
+    screen.blit(HowToPlay, HowToPlayRect)
+    screen.blit(NextButton, NextButtonRect)
+    screen.blit(Instructions_1, Instructions_1_Rect) 
     screen.blit(Obj6_text_surface, Obj6_text_rect)
     screen.blit(Obj7_text_surface, Obj7_text_rect)
 
@@ -231,10 +252,10 @@ def click_e():
 #MW displays a timer on the screen while the game is running 
 def display_score():
     #MW calculates the time the level attempt started by substracting the total time by the time at which the start button was pressed
-    #MW is them devided by 1000 to get seconds from miliseconds and it is rounded to two decimal places
+    #MW is then divided by 1000 to get seconds from miliseconds and it is rounded to two decimal places
     current_time = round((pygame.time.get_ticks()-start_time)/1000,1)
     #MW defines text objects for the score value and blits it onto the screen
-    score_surf = fontObj1.render(str(current_time), False , "Black")
+    score_surf = font_size_80.render(str(current_time), False , "Black")
     score_rect = score_surf.get_rect (topright = (1150,0))
     screen.blit(score_surf, score_rect)
     #MW returns current time
@@ -246,7 +267,10 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
     #MW moves all the different objects in the game as the player presses movement keys to simulates player movement
     #MW Moves the ground rectangles
     ground_rect.y += ground_y
-    ground_rect.x += ground_x  
+    ground_rect.x += ground_x
+    
+    enemy_rect.x += ground_x #*****
+    enemy_rect.y += ground_y #*****
     
     #MW moves the book item rectangles
     for i in range(7):
@@ -270,24 +294,28 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
                 ground_rect.x += moveSpeed
                 for i in range(7):
                     random_book_list[i].x += moveSpeed
+                enemy_rect.x += moveSpeed #*****
                 
             #MW if the x component of movement is more than zero all the objects are moved to the left to keep the objects in their original positions as they should not move if the player collides with a tile
             elif ground_x > 0:
                 ground_rect.x -= moveSpeed
                 for i in range(7):
                     random_book_list[i].x -= moveSpeed
+                enemy_rect.x -= moveSpeed #*****
             
             #MW if the y component of movement is less than zero all the objects are moved to down to keep the objects in their original positions as they should not move if the player collides with a tile
             if ground_y < 0:
                 ground_rect.y += moveSpeed
                 for i in range(7):
                     random_book_list[i].y += moveSpeed
+                enemy_rect.y += moveSpeed #*****
             
             #MW if the y component of movement is more than zero all the objects are moved to the left to to keep the objects in their original positions as they should not move if the player collides with a tile
             elif ground_y > 0:
                 ground_rect.y -= moveSpeed
                 for i in range(7):
                     random_book_list[i].y -= moveSpeed
+                enemy_rect.y -= moveSpeed #*****
             
             
             for tile in tile_list:
@@ -353,7 +381,6 @@ def movePlayer(player_pos, ground_x, ground_y):
 def bookAppearance():
     if book_appearances[book_index]:
         screen.blit(book_image_list[book_index], random_book_list[book_index])
-        
         #MS - The function tells the player to click e to pick the book up. This only occurs if the player has played once. 
         if player_rect.colliderect(random_book_list[book_index]) and timesPlayed == 0:
             click_e()
@@ -364,6 +391,17 @@ def showBooks(collected_books):
         collected_books[i][1].x = i* tile_size
         collected_books[i][1].y = 0
         screen.blit(collected_books[i][0],collected_books[i][1])
+        
+#SH - Blits the hearts shouwing the number of lives in the bottom left corner
+def showLives():
+    for i in range(lives):
+        full_heart_rect.x = 1120 - i*80
+        full_heart_rect.y = 700
+        screen.blit(full_heart, full_heart_rect)
+
+#SH - Blits the enemy onto the screen *****
+def showEnemy():
+    screen.blit(enemy, enemy_rect)
 
 #MS - This matrix-list makes up the entirety of the map. 
 #It is a really efficient way to blit hundreds of objects without taking up hundreds of lines of code.
@@ -429,7 +467,7 @@ world_data = [
 ]
 
 #SH - A list of the different background elements
-background_elements = [table_img, br, bl, bu, bd, bv, bh, chair, chair_up, chair_left, chair_right, owall, iwall, table]
+background_elements = [table_top, br, bl, bu, bd, bv, bh, chair, chair_up, chair_left, chair_right, owall, iwall, table]
 
 #MW initializes the map
 def init_map():
@@ -461,13 +499,21 @@ def init_map():
     
 init_map()
 
-#MW blits the screen for when the user hhas collected all of ther required books
+#MW blits the screen if the user has collected all of ther required books
 def game_won():
     screen.fill('White')
     screen.blit(textSurfaceObj3,textRectObj3)
     screen.blit(textSurfaceObj4,textRectObj4)
     screen.blit(textSurfaceObj5,textRectObj5)
     screen.blit(textSurfaceObj6,textRectObj6)
+
+#SH - blits the screen if the user lost all their lives 
+def game_lost():
+    screen.fill('Black')
+    screen.blit(textSurfaceObj7,textRectObj7)
+    screen.blit(textSurfaceObj8,textRectObj8)
+    screen.blit(textSurfaceObj9,textRectObj9)
+    screen.blit(TitleSurface0,TitleSurfaceRect0)
 
 #MW while True game loop
 while True:
@@ -515,23 +561,28 @@ while True:
                     collected_books.append([book_image_list[book_index],random_book_list[book_index]])
                     book_index+=1
         
+        #SH - Checks if the user collides with the enemy *****
+        if player_rect.colliderect(enemy_rect):
+            lives-=1
+            enemy_rect.x -= 250
+            
         #MW checks if the user pressed the screen            
         if event.type == pygame.MOUSEBUTTONDOWN:
             #MW checks if the user pressed the start button in the intro
-            if textRectObj2.collidepoint(event.pos):
+            if StartGameRect.collidepoint(event.pos):
                 #MW allows the how to play section of the game to start and the intro section to end
                 how_to_play_start = True
                 introStart = False
-            #MW checks if the user pressed thhe play again button    
-            elif textRectObj5.collidepoint(event.pos):
+            #MW checks if the user pressed the play again button    
+            elif textRectObj5.collidepoint(event.pos) or textRectObj9.collidepoint(event.pos): 
                 #starts the game over
                 startOver = True
             #MW check if they pressed the no button when asked if they want to restart the game    
-            elif textRectObj6.collidepoint(event.pos):
+            elif textRectObj6.collidepoint(event.pos) or TitleSurfaceRect0.collidepoint(event.pos):
                 #MW quits the game
                 pygame.quit() 
             #MS - Turns off the how_to_play_start function that I initialized above.
-            elif Obj4_text_rect.collidepoint(event.pos):
+            elif NextButtonRect.collidepoint(event.pos):
                 controlStart = True
                 how_to_play_start = False
                 start_time = pygame.time.get_ticks()
@@ -539,9 +590,11 @@ while True:
     #MW checks a boolean variable for whether or not the intro should be blit onto the screen            
     if introStart:
         intro() #Then, the related function is called
+        
     #MW - The same applies to the how to play portion of the game    
     elif how_to_play_start:
         how_to_play()
+        
     #MW - And for the main portion of the game to be initiated
     elif controlStart:
         #MW fills the screen a base layer grey
@@ -554,19 +607,16 @@ while True:
         showBooks(collected_books)
         #MW gets the score value
         score = display_score()
+        showEnemy()
+        #SH - Shows the user's lives in the bottom left
+        showLives()
     
-    #MW checks if all the books were collected
-    if len(collected_books)==7:
-        #MW stop the game functions from running
-        controlStart=False
-        #MW gets the outro screen and asks the user if they want to play again
-        game_won()
-        #MW blits how long it took you to collect all the books
-        score_message = fontObj1.render(f'your score: {score}',False,"Green")
-        score_message_rect = score_message.get_rect(center = (600,450)) 
-        screen.blit(score_message,score_message_rect)
+    #SH - Checks if the player lost all their lives
+    if lives == 0:
+        controlStart = False
+        game_lost()
         
-        #MW reinitializes all the varaibles so that the game can start again at the exact same state
+        #MW reinitializes all the variables so that the game can start again at the exact same state
         if startOver:
             #MW makes it so the user isnt prompted with press e too pick a book in their second playthrough
             timesPlayed +=1
@@ -579,11 +629,12 @@ while True:
             #MW recreates the map
             init_map()
             
-            #SH - esets book apperance so that the first book is once again the only book on the map
+            #SH - resets book apperance so that the first book is once again the only book on the map
             book_appearances = [True, False, False, False, False, False, False, False]
             book_index = 0
             controlStart = True
             score = 0
+            lives = 3 
             
             #MW resets all the books you collected and resets all of the random books
             collected_books.clear()
@@ -595,6 +646,44 @@ while True:
             random_red_book = initialize_book_position(red_book, red_book_random_positions)
             random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
             random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
+            enemy_rect = enemy.get_rect(topright = (800,-1260)) #SH - Resets the position of the enemy (Will need to change)
+            startOver = False
+        
+    #MW checks if all the books were collected
+    if len(collected_books)==7:
+        #MW stop the game functions from running
+        controlStart=False
+        #MW gets the outro screen and asks the user if they want to play again
+        game_won()
+        #MW blits how long it took you to collect all the books
+        score_message = font_size_80.render(f'your score: {score}',False,"Green")
+        score_message_rect = score_message.get_rect(center = (600,450)) 
+        screen.blit(score_message,score_message_rect)
+        
+        if startOver:
+            timesPlayed +=1
+            start_time = pygame.time.get_ticks()
+            ground_rect.x = -7*tile_size
+            ground_rect.y = -18*tile_size
+            tile_list.clear()
+            init_map()
+        
+            book_appearances = [True, False, False, False, False, False, False, False]
+            book_index = 0
+            controlStart = True
+            score = 0
+            lives = 3 
+            
+            collected_books.clear()
+            random_blue_book = initialize_book_position(blue_book, blue_book_random_positions)
+            random_orange_book = initialize_book_position(orange_book, orange_book_random_positions)
+            random_green_book = initialize_book_position(green_book, green_book_random_positions)
+            random_magenta_book = initialize_book_position(magenta_book, magenta_book_random_positions)
+            random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
+            random_red_book = initialize_book_position(red_book, red_book_random_positions)
+            random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
+            random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
+            enemy_rect = enemy.get_rect(topright = (800,-1260))
             startOver = False
             
     #MW updates the screen        
