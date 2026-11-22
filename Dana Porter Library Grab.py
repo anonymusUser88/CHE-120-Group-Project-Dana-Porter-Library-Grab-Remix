@@ -1,6 +1,6 @@
 #Department of Chemical Engineering, Faculty of Engineering
 #University of Waterloo
-#21/11/2026
+#22/11/2026
 #MW = Marcus Wright, MS = Michael Small - Original Comments
 
 #SH = Sethumi Hapuarachchi
@@ -220,9 +220,9 @@ TitleSurfaceRect0.center = (900, 600)
 
 #initializes all the game sound effects and the game music
 pickUpSound = pygame.mixer.Sound('item-equip-6904.mp3') 
-#pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
+pygame.mixer.music.load('Distant-Sky-Epic-Hybrid-Music-chosic.com_.mp3')
 #plays the game music in a infinite loop
-#pygame.mixer.music.play(-1, 0.0)
+pygame.mixer.music.play(-1, 0.0)
 
 
 
