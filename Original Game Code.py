@@ -58,18 +58,18 @@ pygame.display.set_caption("Dana Porter Book Grab")
 
 #MW imports all of the images and image rectangles for the game
 #MW floor desiggn for the game
-ground = pygame.image.load("Floor Design.png").convert_alpha()
+ground = pygame.image.load("blank map.png").convert_alpha()
 ground=pygame.transform.scale(ground, (52*tile_size,53*tile_size))
 ground_rect = ground.get_rect(topleft = (-7*tile_size,-18*tile_size))
 
 #MW bookshelf tile images
-table_img = pygame.image.load('Table top.png')
-br = pygame.image.load('Bookend Right.png').convert_alpha()
-bl =pygame.image.load('Bookend Left.png').convert_alpha()
-bu = pygame.image.load('Bookend up.png').convert_alpha()
-bd =pygame.image.load('Bookend Down.png').convert_alpha()
-bv =pygame.image.load('Bookmid vertical.png').convert_alpha()
-bh =pygame.image.load('Bookmid Horizontal.png').convert_alpha()
+table_img = pygame.image.load('outer_wall.png')
+br = pygame.image.load('inner_wall.png').convert_alpha()
+bl =pygame.image.load('ice.png').convert_alpha()
+bu = pygame.image.load('tree.png').convert_alpha()
+bd =pygame.image.load('rock.png').convert_alpha()
+bv =pygame.image.load('bench_down.png').convert_alpha()
+bh =pygame.image.load('bench_left.png').convert_alpha()
 
 #MW player forward postion image and rectangle
 player_forward = pygame.image.load("santa_up.png").convert_alpha()
@@ -93,9 +93,9 @@ player_right = pygame.transform.scale(player_right, (70,70))
 player_right_rect = player_right.get_rect(center= (600,400))
 
 #MW micellaneous tiles
-chair = pygame.image.load("chair.png").convert_alpha()
-chair_up = pygame.image.load("chair up.png").convert_alpha()
-chair_left = pygame.image.load("chair left.png").convert_alpha()
+chair = pygame.image.load("bench_left.png").convert_alpha()
+chair_up = pygame.image.load("bench_right.png").convert_alpha()
+chair_left = pygame.image.load("bench_up.png").convert_alpha()
 chair_right = pygame.image.load("chair right.png").convert_alpha()
 iwall = pygame.image.load("iwall.png").convert_alpha()
 owall = pygame.image.load("owall.png").convert_alpha()
