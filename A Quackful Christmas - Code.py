@@ -9,12 +9,11 @@
 #EY = Ethan Yee
 
 #MW: Imports all the necessary modules
-import pygame, sys
+import pygame , sys
 from pygame import *
 from sys import exit
 
 #SH: Imports only the randint function from the random library
-from random import randint
 import random
 
 #MW defines all the variables
@@ -30,12 +29,12 @@ score = 0
 start_time = 0
 timesPlayed = 0
 lives = 3
-collected_books = []
+collected_presents = []
 tile_list = []
-book_index = 0 #SH - Tracks what book the user is trying to find; is used in many of the functions
-#SH - The list below tracks whether each book should appear
+present_index = 0 #SH - Tracks what present the user is trying to find; is used in many of the functions
+#SH - The list below tracks whether each present should appear
 #There is one extra variable in this list, and all associated ones so the functions we created below can work
-book_appearances = [True, False, False, False, False, False, False, False]
+present_appearances = [True, False, False, False, False, False, False, False]
 
 #MW game state variables
 introStart = True
@@ -45,52 +44,46 @@ how_to_play_start = None
 startOver = False
 
 #MW caption for game window
-pygame.display.set_caption("Dana Porter Book Grab")
+pygame.display.set_caption("A Quackful Christmas")
 
 #MW imports all of the images and image rectangles for the game
 #MW floor design for the game
-ground = pygame.image.load("Floor Design.png").convert_alpha()
+ground = pygame.image.load("new_blank_map.png").convert_alpha()
 ground=pygame.transform.scale(ground, (52*tile_size,53*tile_size))
 ground_rect = ground.get_rect(topleft = (-7*tile_size,-18*tile_size))
 
-#MW bookshelf tile images
-table_top = pygame.image.load('Table top.png')
-br = pygame.image.load('Bookend Right.png').convert_alpha()
-bl =pygame.image.load('Bookend Left.png').convert_alpha()
-bu = pygame.image.load('Bookend up.png').convert_alpha()
-bd =pygame.image.load('Bookend Down.png').convert_alpha()
-bv =pygame.image.load('Bookmid vertical.png').convert_alpha()
-bh =pygame.image.load('Bookmid Horizontal.png').convert_alpha()
+#MW presentshelf tile images
+outer_wall = pygame.image.load('outer_wall.png')
+inner_wall = pygame.image.load('inner_wall.png').convert_alpha()
+ice_block = pygame.image.load('ice.png').convert_alpha()
+tree_img = pygame.image.load('tree.png').convert_alpha()
+rock_img =pygame.image.load('rock.png').convert_alpha()
+bench_down =pygame.image.load('bench_down.png').convert_alpha()
+bench_right =pygame.image.load('bench_right.png').convert_alpha()
+bench_left = pygame.image.load("bench_left.png").convert_alpha()
+bench_up = pygame.image.load("bench_up.png").convert_alpha()
+streetlamp_img = pygame.image.load("streetlamp.png").convert_alpha()
 
 #MW player forward postion image and rectangle
-player_forward = pygame.image.load("Move Forward.png").convert_alpha()
+player_forward = pygame.image.load("santa_up.png").convert_alpha()
 player_forward = pygame.transform.scale(player_forward, (70,70))
 player_rect = player_forward.get_rect(center= (600,400))
 player_forward_rect = player_forward.get_rect(center= (600,400))
 
 #MW player back postion image and rectangle
-player_back = pygame.image.load("Move Back.png").convert_alpha()
+player_back = pygame.image.load("santa_down.png").convert_alpha()
 player_back = pygame.transform.scale(player_back, (70,70))
 player_back_rect = player_back.get_rect(center= (600,400))
 
 #MW player left postion image and rectangle
-player_left = pygame.image.load("Move Left.png").convert_alpha()
+player_left = pygame.image.load("santa_left.png").convert_alpha()
 player_left = pygame.transform.scale(player_left, (70,70))
 player_left_rect = player_left.get_rect(center= (600,400))
 
 #MW player right postion image and rectangle
-player_right = pygame.image.load("Move Right.png").convert_alpha()
+player_right = pygame.image.load("santa_right.png").convert_alpha()
 player_right = pygame.transform.scale(player_right, (70,70))
 player_right_rect = player_right.get_rect(center= (600,400))
-
-#MW micellaneous tiles
-chair = pygame.image.load("chair.png").convert_alpha()
-chair_up = pygame.image.load("chair up.png").convert_alpha()
-chair_left = pygame.image.load("chair left.png").convert_alpha()
-chair_right = pygame.image.load("chair right.png").convert_alpha()
-iwall = pygame.image.load("iwall.png").convert_alpha()
-owall = pygame.image.load("owall.png").convert_alpha()
-table = pygame.image.load("table.png").convert_alpha()
 
 #SH - Heart lives image and rectangle
 full_heart = pygame.image.load("full_heart.png").convert_alpha()
@@ -100,63 +93,69 @@ full_heart_rect = full_heart.get_rect(topright = (0, 730))
 #Goose image and rectangle *****
 enemy = pygame.image.load("goose_right.png").convert_alpha()
 enemy = pygame.transform.scale(enemy, (tile_size, tile_size))
-enemy_rect = enemy.get_rect(topright = (800,-1260))
+enemy_rect = enemy.get_rect(topright = (800,-1000))
 
-#MS - Random Book Generator
-#After initiallizing the book images, I scaled them up to the same size as the tiles.
-blue_book = pygame.image.load('Blue Book.png')
-blue_book = pygame.transform.scale(blue_book, (tile_size, tile_size))
-orange_book = pygame.image.load('Orange Image.png')
-orange_book = pygame.transform.scale(orange_book, (tile_size, tile_size))
-green_book = pygame.image.load('Green Image.png')
-green_book = pygame.transform.scale(green_book, (tile_size, tile_size))
-magenta_book = pygame.image.load('Magenta Book.png')
-magenta_book = pygame.transform.scale(magenta_book, (tile_size, tile_size))
-teal_book = pygame.image.load('Teal Book.png')
-teal_book = pygame.transform.scale(teal_book, (tile_size, tile_size))
-red_book = pygame.image.load('Red Book.png')
-red_book = pygame.transform.scale(red_book, (tile_size, tile_size))
-purple_book = pygame.image.load('Purple Book.png')
-purple_book = pygame.transform.scale(purple_book, (tile_size, tile_size))
+#MS - Random Present Generator
+#After initiallizing the present images, I scaled them up to the same size as the tiles.
+blue_present = pygame.image.load('blue_present.png')
+blue_present = pygame.transform.scale(blue_present, (tile_size, tile_size))
+orange_present = pygame.image.load('orange_present.png')
+orange_present = pygame.transform.scale(orange_present, (tile_size, tile_size))
+green_present = pygame.image.load('green_present.png')
+green_present = pygame.transform.scale(green_present, (tile_size, tile_size))
+yellow_present = pygame.image.load('yellow_present.png')
+yellow_present = pygame.transform.scale(yellow_present, (tile_size, tile_size))
+teal_present = pygame.image.load('teal_present.png')
+teal_present = pygame.transform.scale(teal_present, (tile_size, tile_size))
+red_present = pygame.image.load('red_present.png')
+red_present = pygame.transform.scale(red_present, (tile_size, tile_size))
+purple_present = pygame.image.load('purple_present.png')
+purple_present = pygame.transform.scale(purple_present, (tile_size, tile_size))
 
-#MS - Using the rectangle method, I set six different positions for each of the 7 books.
-#Using the random module, each of these functions will choose one of the six different positions and place the book on the set coordinates.
-#SH - Originally, the game had different functions to set the position for each of the books. 
+#MS - Using the rectangle method, I set six different positions for each of the 7 presents.
+#Using the random module, each of these functions will choose one of the six different positions and place the present on the set coordinates.
+#SH - Originally, the game had different functions to set the position for each of the presents. 
 #We decided to consolidate some of them into one function that takes in different parameters 
 
-#SH - Lists of the random positions for each book
-blue_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
-orange_book_random_positions = [(220, 1260),(-300, -1260),(1000, 900),(2800, -100),(500, 200),(1800, 1900)]
-green_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
-magenta_book_random_positions = [(-300,-1260),(1000,900),(2800,-100),(500,200),(1800,1900),(220,1260)]
-teal_book_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
-red_book_random_positions = [(220,1260),(1800,1900),(500,200),(2800,-100),(1000,900),(-300,-1260)]
-purple_book_random_positions = [(800,-1260),(3300,-1530),(2450,540),(3300,3050),(2000,3035),(-270,3060)]
+#SH - Lists of the random positions for each present
+blue_present_random_positions = [(1305,1390),(-495,3010),(2385,405),(2025,675),(1845,-585),(2385,1935)]
 
-#SH - A function that initializes the position of a book; its parameters are the book, and the associated list of potential positions.
-#The function chooses a random position from the associated list, and returns the rectangle of the book at that position.
-def initialize_book_position(book, potential_book_positions):
-    final_position = random.choice(potential_book_positions)
-    return book.get_rect(center = final_position)
+orange_present_random_positions = [(-495, -1490),(315, -230),(1000, 895),(2115, -230),(3465, 40),(1800, 1900)]
 
-#MS - These are the varables assigned to whatever book positions the above functions choose.
+green_present_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
+
+yellow_present_random_positions = [(-270,-3060),(2000,900),(2800,-100),(500,200),(1800,1900),(220,1260)]
+
+teal_present_random_positions = [(-270,3060),(2000,3035),(3300,3050),(2450,540),(3300,-1530),(800,-1260)]
+
+red_present_random_positions = [(220,1260),(1800,1900),(500,200),(2800,-100),(1000,900),(-300,-1260)]
+
+purple_present_random_positions = [(800,-1260),(3300,-1530),(2450,540),(3300,3050),(2000,3035),(-270,3060)]
+
+#SH - A function that initializes the position of a present; its parameters are the present, and the associated list of potential positions.
+#The function chooses a random position from the associated list, and returns the rectangle of the present at that position.
+def initialize_present_position(present, potential_present_positions):
+    final_position = random.choice(potential_present_positions)
+    return present.get_rect(center = final_position)
+
+#MS - These are the varables assigned to whatever present positions the above functions choose.
 #These will be called later in the game loop.
-random_blue_book = initialize_book_position(blue_book, blue_book_random_positions)
-random_orange_book = initialize_book_position(orange_book, orange_book_random_positions)
-random_green_book = initialize_book_position(green_book, green_book_random_positions)
-random_magenta_book = initialize_book_position(magenta_book, magenta_book_random_positions)
-random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
-random_red_book = initialize_book_position(red_book, red_book_random_positions)
-random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
+random_blue_present = initialize_present_position(blue_present, blue_present_random_positions)
+random_orange_present = initialize_present_position(orange_present, orange_present_random_positions)
+random_green_present = initialize_present_position(green_present, green_present_random_positions)
+random_yellow_present = initialize_present_position(yellow_present, yellow_present_random_positions)
+random_teal_present = initialize_present_position(teal_present, teal_present_random_positions)
+random_red_present = initialize_present_position(red_present, red_present_random_positions)
+random_purple_present = initialize_present_position(purple_present, purple_present_random_positions)
 
-#SH - Two lists that contain the image of the book, and the rectangle of the book at the assigned position
+#SH - Two lists that contain the image of the present, and the rectangle of the present at the assigned position
 #Once again, each list has an extra element
-book_image_list = [blue_book, orange_book, green_book, magenta_book, teal_book, red_book, purple_book, purple_book]
-random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
+present_image_list = [blue_present, orange_present, green_present, yellow_present, teal_present, red_present, purple_present, purple_present]
+random_present_list = [random_blue_present, random_orange_present, random_green_present, random_yellow_present, random_teal_present, random_red_present, random_purple_present, random_purple_present]
 
 #MW imports fonts and defines word objects and rectangles for each word object
 font_size_80 = pygame.font.Font('my_font.ttf', 80)
-TitleSurface = font_size_80.render('Dana Porter Book Grab', True, "Black", "White") 
+TitleSurface = font_size_80.render('A Quackful Christmas', True, "Black", "White") 
 TitleSurfaceRect = TitleSurface.get_rect() 
 TitleSurfaceRect.center = (600, 300)
 
@@ -178,10 +177,10 @@ Next_Button_Rect = Next_Button.get_rect(center = (1100,700))
 Instructions_1 = font_size_40.render('Press the \"a\", \"s\", \"w\" and \"d\" keys to move.', True, 'Black', 'Grey')
 Instructions_1_Rect = Instructions_1.get_rect(center = (600,300))
 
-Instructions_2 = font_size_40.render('Collect all 7 books as fast as possible.', True, 'Black', 'Grey')
+Instructions_2 = font_size_40.render('Collect all 7 presents as fast as possible.', True, 'Black', 'Grey')
 Instructions_2_Rect = Instructions_2.get_rect(center = (600,400))
 
-Instructions_3 = font_size_40.render('To pick up a book, press the \"e\" key.', True, 'Black', 'Grey')
+Instructions_3 = font_size_40.render('To pick up a present, press the \"e\" key.', True, 'Black', 'Grey')
 Instructions_3_Rect = Instructions_3.get_rect(center = (600,500))
 
 #SH - Text for the winning screen
@@ -242,7 +241,7 @@ def how_to_play():
     screen.blit(Instructions_2, Instructions_2_Rect)
     screen.blit(Instructions_3, Instructions_3_Rect)
 
-#MS - This is the function that, when called, remindes the player to click e to pick up a book.
+#MS - This is the function that, when called, remindes the player to click e to pick up a present.
 def click_e():
     font = pygame.font.Font('my_font.ttf', 40)
     e_button = font.render('click E to pick up', False, (0,0,0))
@@ -269,13 +268,14 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
     ground_rect.y += ground_y
     ground_rect.x += ground_x
     
-    enemy_rect.x += ground_x #*****
-    enemy_rect.y += ground_y #*****
+    #SH - Moves the enemy *****
+    enemy_rect.x += ground_x 
+    enemy_rect.y += ground_y 
     
-    #MW moves the book item rectangles
+    #MW moves the present item rectangles
     for i in range(7):
-        random_book_list[i].x += ground_x
-        random_book_list[i].y += ground_y
+        random_present_list[i].x += ground_x
+        random_present_list[i].y += ground_y
     
     #Moves every tile in the map matrix
     for tile in tile_list:
@@ -293,28 +293,28 @@ def drawFloor10(ground_x, ground_y, moveSpeed):
             if ground_x < 0:
                 ground_rect.x += moveSpeed
                 for i in range(7):
-                    random_book_list[i].x += moveSpeed
+                    random_present_list[i].x += moveSpeed
                 enemy_rect.x += moveSpeed #*****
                 
             #MW if the x component of movement is more than zero all the objects are moved to the left to keep the objects in their original positions as they should not move if the player collides with a tile
             elif ground_x > 0:
                 ground_rect.x -= moveSpeed
                 for i in range(7):
-                    random_book_list[i].x -= moveSpeed
+                    random_present_list[i].x -= moveSpeed
                 enemy_rect.x -= moveSpeed #*****
             
             #MW if the y component of movement is less than zero all the objects are moved to down to keep the objects in their original positions as they should not move if the player collides with a tile
             if ground_y < 0:
                 ground_rect.y += moveSpeed
                 for i in range(7):
-                    random_book_list[i].y += moveSpeed
+                    random_present_list[i].y += moveSpeed
                 enemy_rect.y += moveSpeed #*****
             
             #MW if the y component of movement is more than zero all the objects are moved to the left to to keep the objects in their original positions as they should not move if the player collides with a tile
             elif ground_y > 0:
                 ground_rect.y -= moveSpeed
                 for i in range(7):
-                    random_book_list[i].y -= moveSpeed
+                    random_present_list[i].y -= moveSpeed
                 enemy_rect.y -= moveSpeed #*****
             
             
@@ -376,21 +376,21 @@ def movePlayer(player_pos, ground_x, ground_y):
     #MW returns the player positon so that it can be reset with the new value
     return player_pos
 
-#SH - This function responds to whether the random book appearance variable is true or false. If true, the book is blitted onto the screen.
-#This was originally made of functions for each book, but now it is in one
-def bookAppearance():
-    if book_appearances[book_index]:
-        screen.blit(book_image_list[book_index], random_book_list[book_index])
-        #MS - The function tells the player to click e to pick the book up. This only occurs if the player has played once. 
-        if player_rect.colliderect(random_book_list[book_index]) and timesPlayed == 0:
+#SH - This function responds to whether the random present appearance variable is true or false. If true, the present is blitted onto the screen.
+#This was originally made of functions for each present, but now it is in one
+def presentAppearance():
+    if present_appearances[present_index]:
+        screen.blit(present_image_list[present_index], random_present_list[present_index])
+        #MS - The function tells the player to click e to pick the present up. This only occurs if the player has played once. 
+        if player_rect.colliderect(random_present_list[present_index]) and timesPlayed == 0:
             click_e()
 
-#MS - This function blits the collected books in the top of the screen.
-def showBooks(collected_books):
-    for i in range(len(collected_books)):
-        collected_books[i][1].x = i* tile_size
-        collected_books[i][1].y = 0
-        screen.blit(collected_books[i][0],collected_books[i][1])
+#MS - This function blits the collected presents in the top of the screen.
+def showPresents(collected_presents):
+    for i in range(len(collected_presents)):
+        collected_presents[i][1].x = i* tile_size
+        collected_presents[i][1].y = 0
+        screen.blit(collected_presents[i][0],collected_presents[i][1])
         
 #SH - Blits the hearts shouwing the number of lives in the bottom left corner
 def showLives():
@@ -408,65 +408,63 @@ def showEnemy():
 #This is really useful when programing colisions. When the player colides with a solid tile, the entire matrix-map is moved.
 #In a collision, this moves every element at the same time in the same direction as the player so it appears like the player isn't moving at all.
 world_data = [
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-[1, 0, 0, 0, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0,12,12,12,12,12,12,12,12,12,12,12,12,12,12, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,12,12,12,12,12,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 0, 0, 0,12,12,12,12,12,12,12,12,12, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,12,12,12,12,12,12,12,12, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0,12,12,12,12,12,12,12, 0, 0, 0, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0,12,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0,12,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,12, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0,12,13,13,13,13,13,12,12,12,12,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,12, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0,12,13,13,13,13,13,13,13,12, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,12,12,13,13,13,13,13,13,13,12, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,12,13,13,13,13,13,13,13,13,13,12, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0,12,12,12,12,12,12,12,12,12,12,12, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0,12,12,12,12,12,12,12,12,12,12,12, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 3, 7, 7, 7, 7, 7, 7, 7, 7, 7, 2, 0, 0, 0, 0, 0, 0, 1],
-[1, 8, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1,14,14,14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,14,14,14, 1],
-[1, 9, 0, 9, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0, 9, 0, 9, 1],
-[1, 0, 0, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0,14,14, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0,10,14,14,11, 0, 0, 0, 0, 1],
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-]
-
+[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+[2, 3, 3, 3, 3, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 3, 3, 3, 3, 3, 3, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 3, 0, 0, 3, 3, 3, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 3, 3, 3, 0, 0, 3, 2],
+[2, 3, 0, 0, 3, 3, 3, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 3, 3, 3, 0, 0, 3, 2],
+[2, 3, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 0, 0, 3, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 4, 4, 0, 0, 4, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 5, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 0, 0, 0, 4, 0, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 6, 0, 6, 6, 6, 0, 6, 6, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 4, 0, 6, 6, 0, 6, 6, 0, 4, 0, 6, 6, 0, 6, 6, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 7, 0, 0, 4, 4, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 9, 9, 0, 9, 9, 0, 0, 0, 0, 9, 9, 0, 9, 9, 0, 0, 0, 0, 9, 9, 0, 9, 9, 0, 4, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 2, 2, 1, 2],
+[2, 1, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 4, 1, 2, 2, 2, 1, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,10, 0, 0, 0, 0,10, 0, 0, 0, 0,10, 0, 0, 0, 0,10, 0, 0, 0, 0,10, 0, 0, 0, 0,10, 0, 0, 0, 0,10, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 3, 0, 0, 3, 3, 3, 0, 0, 0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 5, 4, 4, 4, 4, 4, 5, 4, 4, 5, 4, 4, 4, 4, 4, 4, 0, 0, 3, 3, 3, 0, 0, 3, 2],
+[2, 3, 0, 0, 3, 3, 3, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 3, 3, 3, 0, 0, 3, 2],
+[2, 3, 0, 0, 3, 3, 3, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 3, 3, 3, 0, 0, 3, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 3, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 3, 2],
+[2, 3, 3, 3, 3, 3, 3, 3, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 3, 3, 3, 3, 3, 3, 3, 2],
+[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],]
 #SH - A list of the different background elements
-background_elements = [table_top, br, bl, bu, bd, bv, bh, chair, chair_up, chair_left, chair_right, owall, iwall, table]
+background_elements = [outer_wall, inner_wall, ice_block, tree_img, rock_img, bench_down, bench_right, bench_left, bench_up, streetlamp_img]
 
 #MW initializes the map
 def init_map():
@@ -532,17 +530,17 @@ while True:
             elif event.key == pygame.K_s: 
                 ground_y=0
         
-        #MS - This checks if the player collides with the book 
-        if player_rect.colliderect(random_book_list[book_index]) and book_appearances[book_index]:
+        #MS - This checks if the player collides with the present 
+        if player_rect.colliderect(random_present_list[present_index]) and present_appearances[present_index]:
             #MS - This first part checks if a key is being pressed
             if event.type == pygame.KEYDOWN:
                 #MS - This check determines if the e key is being pressed.
                 if event.key == pygame.K_e:
                     pickUpSound.play() 
-                    book_appearances[book_index] = False
-                    book_appearances[book_index + 1] = True
-                    collected_books.append([book_image_list[book_index],random_book_list[book_index]])
-                    book_index+=1
+                    present_appearances[present_index] = False
+                    present_appearances[present_index + 1] = True
+                    collected_presents.append([present_image_list[present_index],random_present_list[present_index]])
+                    present_index+=1
         
         #SH - Checks if the user collides with the enemy *****
         if player_rect.colliderect(enemy_rect):
@@ -585,12 +583,12 @@ while True:
         #MW calls upon all the necessary function for the game to run
         drawFloor10(ground_x, ground_y, moveSpeed)
         player_pos = movePlayer(player_pos, ground_x, ground_y)
-        bookAppearance()
-        #MW shows all the book you collected at the top left corner of your screen
-        showBooks(collected_books)
+        presentAppearance()
+        #MW shows all the present you collected at the top left corner of your screen
+        showPresents(collected_presents)
         #MW gets the score value
         score = display_score()
-        showEnemy()
+        showEnemy() #*****
         #SH - Shows the user's lives in the bottom left
         showLives()
     
@@ -606,7 +604,7 @@ while True:
         
         #MW reinitializes all the variables so that the game can start again at the exact same state
         if startOver:
-            #MW makes it so the user isnt prompted with press e too pick a book in their second playthrough
+            #MW makes it so the user isnt prompted with press e too pick a present in their second playthrough
             timesPlayed +=1
             #MW gets new start time 
             start_time = pygame.time.get_ticks()
@@ -617,28 +615,28 @@ while True:
             #MW recreates the map
             init_map()
             
-            #SH - resets book apperance so that the first book is once again the only book on the map
-            book_appearances = [True, False, False, False, False, False, False, False]
-            book_index = 0
+            #SH - resets present apperance so that the first present is once again the only present on the map
+            present_appearances = [True, False, False, False, False, False, False, False]
+            present_index = 0
             controlStart = True
             score = 0
             lives = 3 
             
-            #MW resets all the books you collected and resets all of the random books
-            collected_books.clear()
-            random_blue_book = initialize_book_position(blue_book, blue_book_random_positions)
-            random_orange_book = initialize_book_position(orange_book, orange_book_random_positions)
-            random_green_book = initialize_book_position(green_book, green_book_random_positions)
-            random_magenta_book = initialize_book_position(magenta_book, magenta_book_random_positions)
-            random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
-            random_red_book = initialize_book_position(red_book, red_book_random_positions)
-            random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
-            random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
-            enemy_rect = enemy.get_rect(topright = (800,-1260)) #SH - Resets the position of the enemy (Will need to change)
+            #MW resets all the presents you collected and resets all of the random presents
+            collected_presents.clear()
+            random_blue_present = initialize_present_position(blue_present, blue_present_random_positions)
+            random_orange_present = initialize_present_position(orange_present, orange_present_random_positions)
+            random_green_present = initialize_present_position(green_present, green_present_random_positions)
+            random_yellow_present = initialize_present_position(yellow_present, yellow_present_random_positions)
+            random_teal_present = initialize_present_position(teal_present, teal_present_random_positions)
+            random_red_present = initialize_present_position(red_present, red_present_random_positions)
+            random_purple_present = initialize_present_position(purple_present, purple_present_random_positions)
+            random_present_list = [random_blue_present, random_orange_present, random_green_present, random_yellow_present, random_teal_present, random_red_present, random_purple_present, random_purple_present]
+            enemy_rect = enemy.get_rect(topright = (800,-1000)) #SH - Resets the position of the enemy (Will need to change) *****
             startOver = False
         
-    #MW checks if all the books were collected
-    if len(collected_books)==7:
+    #MW checks if all the presents were collected
+    if len(collected_presents)==7:
         #MW stop the game functions from running
         controlStart=False
         
@@ -649,7 +647,7 @@ while True:
         screen.blit(textSurfaceObj5,textRectObj5)
         screen.blit(textSurfaceObj6,textRectObj6)
         
-        #MW blits how long it took you to collect all the books
+        #MW blits how long it took you to collect all the presents
         score_message = font_size_80.render(f'your score: {score}',False,"Green")
         score_message_rect = score_message.get_rect(center = (600,450)) 
         screen.blit(score_message,score_message_rect)
@@ -662,22 +660,22 @@ while True:
             tile_list.clear()
             init_map()
         
-            book_appearances = [True, False, False, False, False, False, False, False]
-            book_index = 0
+            present_appearances = [True, False, False, False, False, False, False, False]
+            present_index = 0
             controlStart = True
             score = 0
             lives = 3 
             
-            collected_books.clear()
-            random_blue_book = initialize_book_position(blue_book, blue_book_random_positions)
-            random_orange_book = initialize_book_position(orange_book, orange_book_random_positions)
-            random_green_book = initialize_book_position(green_book, green_book_random_positions)
-            random_magenta_book = initialize_book_position(magenta_book, magenta_book_random_positions)
-            random_teal_book = initialize_book_position(teal_book, teal_book_random_positions)
-            random_red_book = initialize_book_position(red_book, red_book_random_positions)
-            random_purple_book = initialize_book_position(purple_book, purple_book_random_positions)
-            random_book_list = [random_blue_book, random_orange_book, random_green_book, random_magenta_book, random_teal_book, random_red_book, random_purple_book, random_purple_book]
-            enemy_rect = enemy.get_rect(topright = (800,-1260))
+            collected_presents.clear()
+            random_blue_present = initialize_present_position(blue_present, blue_present_random_positions)
+            random_orange_present = initialize_present_position(orange_present, orange_present_random_positions)
+            random_green_present = initialize_present_position(green_present, green_present_random_positions)
+            random_yellow_present = initialize_present_position(yellow_present, yellow_present_random_positions)
+            random_teal_present = initialize_present_position(teal_present, teal_present_random_positions)
+            random_red_present = initialize_present_position(red_present, red_present_random_positions)
+            random_purple_present = initialize_present_position(purple_present, purple_present_random_positions)
+            random_present_list = [random_blue_present, random_orange_present, random_green_present, random_yellow_present, random_teal_present, random_red_present, random_purple_present, random_purple_present]
+            enemy_rect = enemy.get_rect(topright = (800,-1000)) #*****
             startOver = False
             
     #MW updates the screen        
